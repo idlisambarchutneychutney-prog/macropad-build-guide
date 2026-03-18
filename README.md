@@ -3,8 +3,7 @@
 An interactive step-by-step guide for building a custom RP2040 macropad from scratch.
 6 keys, 2 rotary encoders, per-key RGB, hand-designed PCB, QMK firmware, 3D printed case.
 
-**→ Live demo:** [[your-username.github.io/macropad-build-guide](#)](https://github.com/idlisambarchutneychutney-prog/macropad-build-guide/blob/main/index.html)
-
+**→ Live demo:** https://macropad-build-guide.vercel.app/
 ---
 
 ## What it does
