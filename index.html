@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Macropad – Custom Timeline Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ---- themes ---- */
+
+[data-theme="dark"] {
+  --bg: #0a0a0f;
+  --bg2: #0e0e16;
+  --surface: #111118;
+  --card: #16161f;
+  --card2: #1c1c28;
+  --border: #2a2a3a;
+  --border2: #3a3a50;
+  --accent: #7c5cfc;
+  --accent2: #fc5c7d;
+  --accent3: #5cfcb4;
+  --accent4: #fcbc5c;
+  --text: #e8e8f2;
+  --text2: #b8b8cc;
+  --muted: #777788;
+  --shadow: rgba(0,0,0,0.5);
+  --glow: rgba(124,92,252,0.25);
+  --grid-col: rgba(124,92,252,0.07);
+  --tag-bg: rgba(255,255,255,0.06);
+  --code-bg: #0d0d14;
+  --hero-grad: radial-gradient(ellipse 80% 60% at 50% 0%, #1a0f3c, #0a0a0f 70%);
+}
+
+[data-theme="light"] {
+  --bg: #f0ede8;
+  --bg2: #e8e4de;
+  --surface: #faf8f4;
+  --card: #ffffff;
+  --card2: #f2efe9;
+  --border: #dddad3;
+  --border2: #c8c4bb;
+  --accent: #4c2ee0;
+  --accent2: #d93060;
+  --accent3: #1a9a5e;
+  --accent4: #c07a0a;
+  --text: #1a1828;
+  --text2: #3a3855;
+  --muted: #888877;
+  --shadow: rgba(0,0,0,0.1);
+  --glow: rgba(76,46,224,0.12);
+  --grid-col: rgba(76,46,224,0.05);
+  --tag-bg: rgba(0,0,0,0.05);
+  --code-bg: #1e1e2e;
+  --hero-grad: radial-gradient(ellipse 80% 60% at 50% 0%, #d8d0ff, #f0ede8 70%);
+}
+
+[data-theme="hacker"] {
+  --bg: #050a05;
+  --bg2: #070d07;
+  --surface: #0a100a;
+  --card: #0d150d;
+  --card2: #112011;
+  --border: #1a361a;
+  --border2: #245024;
+  --accent: #00ff41;
+  --accent2: #00d4aa;
+  --accent3: #aaff00;
+  --accent4: #ffaa00;
+  --text: #ccffcc;
+  --text2: #88cc88;
+  --muted: #446644;
+  --shadow: rgba(0,0,0,0.8);
+  --glow: rgba(0,255,65,0.2);
+  --grid-col: rgba(0,255,65,0.05);
+  --tag-bg: rgba(0,255,65,0.06);
+  --code-bg: #020702;
+  --hero-grad: radial-gradient(ellipse 80% 60% at 50% 0%, #001a00, #050a05 70%);
+}
+
+[data-theme="warm"] {
+  --bg: #1a1208;
+  --bg2: #1f1509;
+  --surface: #231a0c;
+  --card: #2a2010;
+  --card2: #332818;
+  --border: #4a3820;
+  --border2: #5a4830;
+  --accent: #ff8c42;
+  --accent2: #ffcc5c;
+  --accent3: #ff5c8a;
+  --accent4: #c8ff5c;
+  --text: #fff0d8;
+  --text2: #d4b898;
+  --muted: #8a7058;
+  --shadow: rgba(0,0,0,0.6);
+  --glow: rgba(255,140,66,0.2);
+  --grid-col: rgba(255,140,66,0.06);
+  --tag-bg: rgba(255,140,66,0.07);
+  --code-bg: #130e04;
+  --hero-grad: radial-gradient(ellipse 80% 60% at 50% 0%, #3a2008, #1a1208 70%);
+}
+
+/* ---- reset ---- */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background .4s, color .4s;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity .2s;
+}
+a:hover { opacity: .75; text-decoration: underline; }
+
+/* ---- read progress bar ---- */
+
+.read-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 999;
+}
+.read-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  width: 0%;
+  transition: width .15s;
+}
+
+/* ---- theme switcher ---- */
+
+.theme-bar {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 6px 12px;
+  box-shadow: 0 4px 24px var(--shadow);
+  transition: background .4s, border-color .4s;
+}
+.theme-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-right: 4px;
+}
+.theme-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .2s, border-color .2s;
+}
+.theme-btn:hover { transform: scale(1.2); }
+.theme-btn.active {
+  border-color: var(--text);
+  box-shadow: 0 0 8px var(--glow);
+}
+.theme-btn[data-t="dark"]   { background: linear-gradient(135deg, #0a0a0f, #7c5cfc); }
+.theme-btn[data-t="light"]  { background: linear-gradient(135deg, #f0ede8, #4c2ee0); }
+.theme-btn[data-t="hacker"] { background: linear-gradient(135deg, #050a05, #00ff41); }
+.theme-btn[data-t="warm"]   { background: linear-gradient(135deg, #1a1208, #ff8c42); }
+
+/* ---- hero ---- */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  background: var(--hero-grad);
+  position: relative;
+  overflow: hidden;
+  transition: background .4s;
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-col) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-col) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridDrift 25s linear infinite;
+}
+@keyframes gridDrift {
+  to { transform: translateY(40px); }
+}
+
+.hero-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(124,92,252,.1);
+  border: 1px solid rgba(124,92,252,.3);
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .8s both;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(44px, 9vw, 100px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -3px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 10px;
+  animation: fadeUp .8s .1s both;
+}
+.grad {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(14px, 2.5vw, 20px);
+  color: var(--text2);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .8s .2s both;
+}
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 32px;
+  animation: fadeUp .8s .3s both;
+}
+.pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 7px 15px;
+  border-radius: 30px;
+  border: 1px solid;
+  transition: transform .2s;
+}
+.pill:hover { transform: translateY(-2px); }
+.pill.p { color: var(--accent);  border-color: rgba(124,92,252,.4); background: rgba(124,92,252,.08); }
+.pill.r { color: var(--accent2); border-color: rgba(252,92,125,.4); background: rgba(252,92,125,.08); }
+.pill.g { color: var(--accent3); border-color: rgba(92,252,180,.4); background: rgba(92,252,180,.08); }
+.pill.y { color: var(--accent4); border-color: rgba(252,188,92,.4); background: rgba(252,188,92,.08); }
+
+.hero-prog {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 22px;
+  margin-bottom: 28px;
+  animation: fadeUp .8s .4s both;
+  transition: background .4s, border-color .4s;
+}
+.hp-label  { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+.hp-count  { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--accent); }
+.hp-of     { color: var(--muted); font-size: 13px; }
+.hp-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 80px; }
+.hp-bar    { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; width: 0%; transition: width .4s; }
+.hp-pct    { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); }
+
+.scroll-hint {
+  position: relative;
+  z-index: 1;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  animation: bounce 2.5s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(7px); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- timeline selector ---- */
+
+.tl-selector {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 30px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+  transition: background .4s, border-color .4s;
+}
+.tl-selector::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+}
+.tl-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.tl-day-big {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  transition: color .3s;
+}
+.tl-mode-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.mode-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--card2);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.mode-chip:hover  { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.mode-chip.active { border-color: var(--accent); background: rgba(124,92,252,.15); color: var(--accent); font-weight: 700; }
+
+/* range slider */
+.tl-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  background: var(--border);
+  transition: background .3s;
+}
+.tl-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 12px var(--glow);
+  transition: transform .2s, box-shadow .2s;
+}
+.tl-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px var(--bg), 0 0 18px var(--glow);
+}
+.tl-slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  cursor: pointer;
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 10px var(--glow);
+}
+
+.tl-summary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+.tl-phase-pill { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; text-align: center; transition: all .3s; }
+.tl-phase-pill.tl-p1 { border-top: 2px solid var(--accent); }
+.tl-phase-pill.tl-p2 { border-top: 2px solid var(--accent2); }
+.tl-phase-pill.tl-p3 { border-top: 2px solid var(--accent4); }
+.tl-phase-pill.tl-p4 { border-top: 2px solid var(--accent3); }
+.tl-phase-pill.tl-p5 { border-top: 2px solid #5cc8fc; }
+
+.tl-status { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 12.5px; transition: all .3s; }
+.tl-status.normal     { background: rgba(92,252,180,.07);  border: 1px solid rgba(92,252,180,.2);  color: var(--accent3); }
+.tl-status.compressed { background: rgba(252,188,92,.07);  border: 1px solid rgba(252,188,92,.2);  color: var(--accent4); }
+.tl-status.relaxed    { background: rgba(92,200,252,.07);  border: 1px solid rgba(92,200,252,.2);  color: #5cc8fc; }
+
+/* ---- layout ---- */
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+.sec-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: .4;
+}
+h2.st {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 22px;
+  margin-top: 60px;
+  color: var(--text);
+}
+
+/* ---- overview stat cards ---- */
+
+.ov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 14px;
+  margin-bottom: 60px;
+}
+.ov-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s, border-color .25s, box-shadow .25s, background .4s;
+}
+.ov-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.ov-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 28px var(--glow);
+}
+
+/* ---- shopping list ---- */
+
+.mat-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: background .4s, border-color .4s;
+}
+.mat-table th {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--card2);
+  border-bottom: 1px solid var(--border);
+}
+.mat-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.mat-table tr:last-child td { border-bottom: none; }
+.mat-table tr:hover td { background: rgba(124,92,252,.04); }
+
+.tag { display: inline-block; font-family: 'Space Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 700; }
+.tag.must { background: rgba(252,92,125,.15); color: var(--accent2); }
+.tag.opt  { background: rgba(92,252,180,.12); color: var(--accent3); }
+
+.price { font-family: 'Space Mono', monospace; color: var(--accent4); font-size: 12.5px; }
+
+.res-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  background: rgba(124,92,252,.1);
+  border: 1px solid rgba(124,92,252,.25);
+  border-radius: 4px;
+  padding: 1px 7px;
+  margin-left: 4px;
+  text-decoration: none;
+  transition: background .2s, transform .15s;
+  white-space: nowrap;
+}
+.res-link:hover { background: rgba(124,92,252,.2); transform: translateY(-1px); text-decoration: none; }
+
+/* ---- tip / callout ---- */
+
+.tip {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 18px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  transition: background .4s;
+}
+.tip.info { background: rgba(124,92,252,.07); border-color: var(--accent); }
+.tip.warn { background: rgba(252,188,92,.07); border-color: var(--accent4); }
+.tip.ok   { background: rgba(92,252,180,.07); border-color: var(--accent3); }
+.tip.err  { background: rgba(252,92,125,.07); border-color: var(--accent2); }
+.tip strong {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 5px;
+}
+.tip.info strong { color: var(--accent); }
+.tip.warn strong { color: var(--accent4); }
+.tip.ok   strong { color: var(--accent3); }
+.tip.err  strong { color: var(--accent2); }
+
+/* ---- phase headers ---- */
+
+.ph-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left: 4px solid;
+  transition: background .4s, border-color .4s;
+}
+.ph-head.d1 { border-left-color: var(--accent); }
+.ph-head.d2 { border-left-color: var(--accent2); }
+.ph-head.d3 { border-left-color: var(--accent4); }
+.ph-head.d4 { border-left-color: var(--accent3); }
+.ph-head.d5 { border-left-color: #5cc8fc; }
+
+/* ---- day cards ---- */
+
+.day-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 18px;
+  align-items: start;
+  transition: border-color .2s, transform .2s, background .4s, box-shadow .2s;
+}
+.day-card:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px var(--glow);
+}
+.day-num {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(124,92,252,.1);
+  border: 1px solid rgba(124,92,252,.2);
+  border-radius: 10px;
+  padding: 10px 6px;
+}
+.day-num .lbl { font-family: 'Space Mono', monospace; font-size: 8px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.day-num .num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; transition: all .4s; }
+.day-num .shared-badge { font-family: 'Space Mono', monospace; font-size: 7px; color: var(--accent4); letter-spacing: .5px; margin-top: 2px; display: none; }
+.day-card.day-shared .shared-badge { display: block; }
+.day-card.day-shared .day-num { border-color: rgba(252,188,92,.3); background: rgba(252,188,92,.07); }
+.day-card.day-shared .day-num .num { color: var(--accent4); }
+
+/* ---- tasks ---- */
+
+.day-tasks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.day-tasks li {
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+  user-select: none;
+}
+.day-tasks li:hover { background: rgba(124,92,252,.06); border-color: rgba(124,92,252,.3); }
+.day-tasks li.done { opacity: .55; }
+.day-tasks li.done .t-txt { text-decoration: line-through; color: var(--muted); }
+.t-cb {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border: 2px solid var(--border2);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000;
+}
+.day-tasks li.done .t-cb {
+  background: var(--accent3);
+  border-color: var(--accent3);
+}
+
+/* ---- resource chips ---- */
+
+.day-res { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+.day-res-lbl { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 7px; }
+.res-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.res-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text2);
+  text-decoration: none;
+  transition: all .2s;
+}
+.res-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,92,252,.07); transform: translateY(-2px); text-decoration: none; }
+
+/* ---- pcb deep dive ---- */
+
+.pcb-step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 16px;
+  align-items: start;
+  transition: background .4s;
+}
+.step-circle {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.step-body code {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(124,92,252,.15);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* ---- code blocks ---- */
+
+.code-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.code-lbl::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.85;
+  overflow-x: auto;
+  color: #cdd6f4;
+  margin-bottom: 16px;
+}
+.cm  { color: #6272a4; }
+.kw  { color: var(--accent); }
+.str { color: var(--accent3); }
+.num { color: var(--accent4); }
+.fn  { color: #ffb86c; }
+
+/* ---- case options ---- */
+
+.case-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.case-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 20px;
+  transition: transform .25s, border-color .25s, box-shadow .25s, background .4s;
+}
+.case-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 28px var(--glow); }
+.case-rec { margin-top: 12px; font-family: 'Space Mono', monospace; font-size: 9px; padding: 4px 10px; border-radius: 5px; display: inline-block; }
+.case-rec.best { background: rgba(92,252,180,.12); color: var(--accent3); }
+.case-rec.good { background: rgba(124,92,252,.12); color: var(--accent); }
+
+/* ---- resource hub ---- */
+
+.res-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.res-cat   { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: background .4s, border-color .4s; }
+.res-links { display: flex; flex-direction: column; gap: 7px; }
+.rl {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text2);
+  font-size: 13px;
+  transition: all .2s;
+}
+.rl:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,92,252,.06); transform: translateX(4px); text-decoration: none; }
+.rl .rt { flex: 1; }
+.rl .ra { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); }
+
+/* ---- final checklist ---- */
+
+.check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; }
+.check-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 12px 15px;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+.check-item:hover { border-color: var(--accent); background: rgba(124,92,252,.04); }
+.check-item.done { opacity: .55; }
+.check-item.done .ci-txt { text-decoration: line-through; color: var(--muted); }
+.check-box {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  border: 2px solid var(--border2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s;
+  font-size: 13px;
+  font-weight: 900;
+  color: #000;
+}
+.check-item.done .check-box { background: var(--accent3); border-color: var(--accent3); }
+
+/* ---- footer ---- */
+
+.guide-footer {
+  text-align: center;
+  padding: 60px 24px 40px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.guide-footer h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(26px, 5vw, 42px);
+  font-weight: 800;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--accent3), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.footer-links { margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ---- responsive ---- */
+
+@media (max-width: 600px) {
+  .day-card  { grid-template-columns: 1fr; }
+  .day-num   { flex-direction: row; gap: 8px; padding: 10px 14px; }
+  .pcb-step  { grid-template-columns: 1fr; }
+  .theme-bar { top: auto; bottom: 16px; right: 50%; transform: translateX(50%); }
+  .tl-summary { grid-template-columns: repeat(3, 1fr); }
+  .tl-day-big { font-size: 30px; }
+  .tl-top    { flex-direction: column; }
+  .tl-day-display { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="read-bar">
+  <div class="read-fill" id="readFill"></div>
+</div>
+
+<div class="theme-bar">
+  <span class="theme-label">Theme</span>
+  <button class="theme-btn active" data-t="dark"   title="Dark Night"   onclick="setTheme('dark')"></button>
+  <button class="theme-btn"        data-t="light"  title="Light Paper"  onclick="setTheme('light')"></button>
+  <button class="theme-btn"        data-t="hacker" title="Hacker Green" onclick="setTheme('hacker')"></button>
+  <button class="theme-btn"        data-t="warm"   title="Warm Amber"   onclick="setTheme('warm')"></button>
+</div>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge">🛠️ DIY Electronics · Build Guide</div>
+  <h1>Build Your Own<br><span class="grad">Macropad</span></h1>
+  <p class="hero-sub" id="heroSub">Custom PCB · 6 Keys · 2 Knobs · RGB Lighting · 3D Printed Case</p>
+  <div class="hero-pills">
+    <span class="pill p">RP2040 Pico</span>
+    <span class="pill r">KiCad PCB</span>
+    <span class="pill g">QMK Firmware</span>
+    <span class="pill y">3D Printed Case</span>
+  </div>
+  <div class="hero-prog">
+    <span class="hp-label">Progress</span>
+    <span class="hp-count" id="hpDone">0</span>
+    <span class="hp-of">/ <span id="hpTotal">0</span> tasks</span>
+    <div class="hp-bar-wrap"><div class="hp-bar" id="hpBar"></div></div>
+    <span class="hp-pct" id="hpPct">0%</span>
+  </div>
+  <div class="scroll-hint">↓ SCROLL TO START</div>
+</section>
+
+<div class="container">
+
+  <div class="sec-label" style="margin-top:48px">⏱️ Your Schedule</div>
+  <div class="tl-selector">
+    <div class="tl-top">
+      <div class="tl-title-wrap">
+        <div class="tl-title">How many days do you have?</div>
+        <div class="tl-subtitle">Drag the slider — the entire guide reschedules instantly</div>
+      </div>
+      <div class="tl-day-display">
+        <div class="tl-day-big" id="tlDayBig">15</div>
+        <div class="tl-day-label">Days Total</div>
+      </div>
+    </div>
+
+    <div class="tl-mode-chips">
+      <span class="tl-mode-lbl">Quick Pick:</span>
+      <button class="mode-chip" onclick="applyPreset(3)">3 Days 🔥</button>
+      <button class="mode-chip" onclick="applyPreset(5)">5 Days</button>
+      <button class="mode-chip" onclick="applyPreset(7)">7 Days</button>
+      <button class="mode-chip" onclick="applyPreset(10)">10 Days</button>
+      <button class="mode-chip active" onclick="applyPreset(15)">15 Days ✦</button>
+      <button class="mode-chip" onclick="applyPreset(21)">21 Days</button>
+      <button class="mode-chip" onclick="applyPreset(30)">30 Days 😌</button>
+    </div>
+
+    <div class="tl-slider-wrap">
+      <div class="tl-slider-labels">
+        <span>3 days (Sprint)</span>
+        <span id="tlMidLabel">15 days (Default)</span>
+        <span>30 days (Relaxed)</span>
+      </div>
+      <input type="range" class="tl-slider" id="tlSlider" min="3" max="30" value="15"
+             oninput="setTimeline(parseInt(this.value), true)">
+    </div>
+
+    <div class="tl-summary">
+      <div class="tl-phase-pill tl-p1">
+        <div class="tl-pp-name">🎨 Design &amp;<br>Planning</div>
+        <div class="tl-pp-days" id="sum-p1">Days 1–3</div>
+      </div>
+      <div class="tl-phase-pill tl-p2">
+        <div class="tl-pp-name">🔌 PCB Layout<br>&amp; Order</div>
+        <div class="tl-pp-days" id="sum-p2">Days 4–6</div>
+      </div>
+      <div class="tl-phase-pill tl-p3">
+        <div class="tl-pp-name">⏳ Case Design<br>&amp; Firmware Prep</div>
+        <div class="tl-pp-days" id="sum-p3">Days 7–9</div>
+      </div>
+      <div class="tl-phase-pill tl-p4">
+        <div class="tl-pp-name">🔧 Assembly<br>&amp; Soldering</div>
+        <div class="tl-pp-days" id="sum-p4">Days 10–12</div>
+      </div>
+      <div class="tl-phase-pill tl-p5">
+        <div class="tl-pp-name">💻 Firmware<br>&amp; Final Assembly</div>
+        <div class="tl-pp-days" id="sum-p5">Days 13–15</div>
+      </div>
+    </div>
+
+    <div class="tl-status normal" id="tlStatus">
+      <span class="tl-status-icon">✅</span>
+      <span class="tl-status-text" id="tlStatusText">Standard 15-day guide — one comfortable session per day.</span>
+    </div>
+  </div>
+
+  <h2 class="st">📋 Build Overview</h2>
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-icon">⌨️</div><div class="ov-title">Keys</div><div class="ov-val">6 Keys</div></div>
+    <div class="ov-card"><div class="ov-icon">🎛️</div><div class="ov-title">Encoders</div><div class="ov-val">2 Knobs</div></div>
+    <div class="ov-card"><div class="ov-icon">🌈</div><div class="ov-title">Lighting</div><div class="ov-val">Per-Key RGB</div></div>
+    <div class="ov-card"><div class="ov-icon">🗂️</div><div class="ov-title">MCU</div><div class="ov-val">RP2040</div></div>
+    <div class="ov-card"><div class="ov-icon">📦</div><div class="ov-title">Case</div><div class="ov-val">3D Printed</div></div>
+    <div class="ov-card"><div class="ov-icon">⏱️</div><div class="ov-title">Timeline</div><div class="ov-val" id="ov-timeline-val">15 Days</div></div>
+  </div>
+
+  <div class="sec-label">🛒 Shopping List</div>
+  <h2 class="st" style="margin-top:0">What You'll Need</h2>
+  <table class="mat-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>What to Buy</th>
+        <th>Est. Cost</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Microcontroller</strong></td><td>Raspberry Pi Pico (RP2040) <a href="https://www.raspberrypi.com/products/raspberry-pi-pico/" target="_blank" class="res-link">↗ Buy</a></td><td class="price">$4–$8</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Key Switches</strong></td><td>6× Gateron Yellow / Brown switches <a href="https://www.aliexpress.com/w/wholesale-gateron-switches.html" target="_blank" class="res-link">↗ AliExpress</a></td><td class="price">$5–$10</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Keycaps</strong></td><td>6× MX-compatible keycaps <a href="https://kbdfans.com" target="_blank" class="res-link">↗ KBDFans</a></td><td class="price">$5–$15</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>RGB LEDs</strong></td><td>6× SK6812 MINI-E (south-facing) <a href="https://www.aliexpress.com/w/wholesale-SK6812-MINI-E.html" target="_blank" class="res-link">↗ AliExpress</a></td><td class="price">$2–$5</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Rotary Encoders</strong></td><td>2× EC11 encoder with push-click <a href="https://www.aliexpress.com/w/wholesale-EC11-rotary-encoder.html" target="_blank" class="res-link">↗ AliExpress</a></td><td class="price">$2–$4</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Diodes</strong></td><td>10× 1N4148 SOD-123 SMD diodes</td><td class="price">$1–$2</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>PCB Fabrication</strong></td><td>5 boards from JLCPCB <a href="https://jlcpcb.com" target="_blank" class="res-link">↗ JLCPCB</a> or PCBWay <a href="https://pcbway.com" target="_blank" class="res-link">↗ PCBWay</a></td><td class="price">$5–$12</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Solder + Iron</strong></td><td>Pinecil or TS101 iron recommended <a href="https://pine64.com/product/pinecil-smart-mini-portable-soldering-iron/" target="_blank" class="res-link">↗ Pinecil</a></td><td class="price">$20–$35</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>USB-C Socket</strong></td><td>1× USB-C female SMD or THT connector</td><td class="price">$1–$3</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Reset Switch</strong></td><td>1× 6mm tactile push button (THT)</td><td class="price">$0.50</td><td><span class="tag must">Must Have</span></td></tr>
+      <tr><td><strong>Encoder Knobs</strong></td><td>2× 6mm shaft metal/plastic knobs</td><td class="price">$2–$6</td><td><span class="tag opt">Nice to Have</span></td></tr>
+      <tr><td><strong>3D Printed Case</strong></td><td>PLA/PETG filament or JLCPCB 3D print <a href="https://jlcpcb.com/3d-printing" target="_blank" class="res-link">↗ JLCPCB 3D</a></td><td class="price">$3–$8</td><td><span class="tag opt">Nice to Have</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip warn" id="pcbTip">
+    <strong>⚠️ Order PCB on Day 3!</strong>
+    JLCPCB fabrication + shipping = 7–10 days. Everything else happens while you wait.
+  </div>
+
+  <div class="sec-label" style="margin-top:60px">🔗 Resources</div>
+  <h2 class="st" style="margin-top:0">Your Essential Links</h2>
+  <div class="res-grid">
+    <div class="res-cat">
+      <div class="res-cat-title">🖥️ PCB Design</div>
+      <div class="res-links">
+        <a href="https://www.kicad.org/download/" target="_blank" class="rl"><span class="ri">📐</span><span class="rt">KiCad Download</span><span class="ra">Free EDA</span></a>
+        <a href="https://github.com/ai03-2725/MX_V2" target="_blank" class="rl"><span class="ri">⌨️</span><span class="rt">ai03 Switch Footprints</span><span class="ra">GitHub</span></a>
+        <a href="https://jlcpcb.com" target="_blank" class="rl"><span class="ri">🏭</span><span class="rt">JLCPCB (Order PCBs)</span><span class="ra">$5 for 5 boards</span></a>
+        <a href="https://www.pcbway.com" target="_blank" class="rl"><span class="ri">🟦</span><span class="rt">PCBWay (Alternative)</span><span class="ra">Quality option</span></a>
+        <a href="https://builder.swillkb.com" target="_blank" class="rl"><span class="ri">🗂️</span><span class="rt">swillkb Plate Builder</span><span class="ra">Switch plate tool</span></a>
+      </div>
+    </div>
+    <div class="res-cat">
+      <div class="res-cat-title">💻 Firmware</div>
+      <div class="res-links">
+        <a href="https://docs.qmk.fm/#/newbs" target="_blank" class="rl"><span class="ri">🚀</span><span class="rt">QMK Newbie Guide</span><span class="ra">Start here</span></a>
+        <a href="https://docs.qmk.fm" target="_blank" class="rl"><span class="ri">📖</span><span class="rt">QMK Full Docs</span><span class="ra">Reference</span></a>
+        <a href="https://usevia.app" target="_blank" class="rl"><span class="ri">🎛️</span><span class="rt">VIA Web App</span><span class="ra">Remap live</span></a>
+        <a href="https://get.vial.today" target="_blank" class="rl"><span class="ri">⚡</span><span class="rt">Vial (QMK Fork)</span><span class="ra">Easier GUI</span></a>
+        <a href="https://github.com/KMKfw/kmk_firmware" target="_blank" class="rl"><span class="ri">🐍</span><span class="rt">KMK (CircuitPython)</span><span class="ra">Python alt.</span></a>
+      </div>
+    </div>
+    <div class="res-cat">
+      <div class="res-cat-title">🖨️ Case & CAD</div>
+      <div class="res-links">
+        <a href="https://www.autodesk.com/products/fusion-360/free-trial" target="_blank" class="rl"><span class="ri">🧊</span><span class="rt">Fusion 360 Free</span><span class="ra">Best 3D CAD</span></a>
+        <a href="https://www.tinkercad.com" target="_blank" class="rl"><span class="ri">🟧</span><span class="rt">Tinkercad (Browser)</span><span class="ra">Zero install</span></a>
+        <a href="https://www.printables.com" target="_blank" class="rl"><span class="ri">🖨️</span><span class="rt">Printables</span><span class="ra">STL files</span></a>
+      </div>
+    </div>
+    <div class="res-cat">
+      <div class="res-cat-title">📚 Learn & Community</div>
+      <div class="res-links">
+        <a href="https://www.youtube.com/@JoeScotto" target="_blank" class="rl"><span class="ri">▶️</span><span class="rt">Joe Scotto YouTube</span><span class="ra">Best tutorials</span></a>
+        <a href="https://www.reddit.com/r/MechanicalKeyboards/" target="_blank" class="rl"><span class="ri">💬</span><span class="rt">r/MechanicalKeyboards</span><span class="ra">Community</span></a>
+        <a href="https://www.reddit.com/r/olkb/" target="_blank" class="rl"><span class="ri">⌨️</span><span class="rt">r/olkb (QMK Sub)</span><span class="ra">QMK help</span></a>
+        <a href="https://discord.gg/qmk" target="_blank" class="rl"><span class="ri">🎮</span><span class="rt">QMK Discord</span><span class="ra">Live support</span></a>
+        <a href="https://keyboardtester.com" target="_blank" class="rl"><span class="ri">🧪</span><span class="rt">Keyboard Tester</span><span class="ra">Test every key</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- timeline -->
+  <div class="sec-label" style="margin-top:60px">📅 Build Plan</div>
+  <h2 class="st" style="margin-top:0" id="timelineHeading">Your 15-Day Build Timeline</h2>
+
+  <!-- phase 1 -->
+  <div class="phase">
+    <div class="ph-head d1">
+      <span class="ph-num" id="ph-num-1">DAYS 1–3</span>
+      <span class="ph-name">🎨 Design & Planning</span>
+      <span class="ph-badge d1">Phase 1</span>
+    </div>
+    <div class="days-grid">
+      <div class="day-card" data-card="0">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">1</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Plan Your Layout</div>
+          <div class="day-desc">Sketch your key arrangement on paper before touching software. This 5-min step saves hours!</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Sketch layout: 2×3 key grid + 2 knobs positioned above</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Choose switch type: tactile Brown, linear Yellow/Red, or clicky Blue</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Decide USB-C port placement (top edge recommended)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Download and install KiCad — free PCB design software</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://www.kicad.org/download/" target="_blank" class="res-chip">📐 Download KiCad</a>
+              <a href="https://www.youtube.com/@JoeScotto" target="_blank" class="res-chip">▶️ Joe Scotto YouTube</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="1">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">2</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Learn KiCad Basics</div>
+          <div class="day-desc">Watch one good tutorial. Download the keyboard footprint libraries. Understand schematic vs PCB editor.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Watch 1 beginner KiCad keyboard PCB tutorial on YouTube</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Download ai03's MX switch footprint library from GitHub</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Download EC11 rotary encoder KiCad footprint</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Understand schematic editor vs PCB layout editor difference</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://github.com/ai03-2725/MX_V2" target="_blank" class="res-chip">⌨️ ai03 MX Footprints</a>
+              <a href="https://github.com/ai03-2725/Unified-Daughterboard" target="_blank" class="res-chip">📋 ai03 PCB Guide</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="2">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">3</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Draw Your Schematic</div>
+          <div class="day-desc">Logical wiring diagram only — not physical layout yet. Connect every component to the MCU.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Place all symbols: MCU, 6 switches, 6 diodes, 2 encoders, 6 RGB LEDs</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Wire switch matrix: switch → diode (cathode toward column) → column pin</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Wire RGB daisy chain: MCU GP → LED1 DIN → LED1 DOUT → LED2 DIN...</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Wire encoder A, B, SW pins to free GPIO pins</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Run ERC (Electrical Rules Check) — fix every error before proceeding</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://docs.qmk.fm/#/hand_wire" target="_blank" class="res-chip">🔌 QMK Wiring Reference</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- phase 2 -->
+  <div class="phase">
+    <div class="ph-head d2">
+      <span class="ph-num" id="ph-num-2">DAYS 4–6</span>
+      <span class="ph-name">🔌 PCB Layout & Order</span>
+      <span class="ph-badge d2">Phase 2</span>
+    </div>
+    <div class="days-grid">
+      <div class="day-card" data-card="3">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">4</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Physical PCB Placement</div>
+          <div class="day-desc">Import footprints from schematic and place them physically on your board.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Open PCB editor → "Update PCB from Schematic" to import all footprints</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Draw board outline on Edge.Cuts layer (~90mm × 72mm for this layout)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Place 6 MX switch footprints in 2×3 grid (19.05mm standard MX spacing)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Place 2 EC11 encoder footprints above the key grid</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Place SK6812 LEDs under each switch (south-facing orientation)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Place MCU and USB-C socket — USB-C must reach the board edge</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="4">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">5</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Route Traces & Ground Pour</div>
+          <div class="day-desc">Connect everything with copper traces. Add a ground pour for a cleaner, pro result.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Route switch matrix: columns on F.Cu, rows on B.Cu using vias to cross</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Route RGB data chain between LEDs (short traces, same layer if possible)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Use 0.5mm traces for power (VCC/GND), 0.25mm for signal lines</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Add GND copper pour on both layers (Edit → Fill All Zones)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Run DRC (Design Rules Check) — zero errors before export!</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="5">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">6</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Export Gerbers & Order! 🎉</div>
+          <div class="day-desc">Add silkscreen, export Gerbers, and place your order. Boards arrive in ~7 days!</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Add silkscreen labels: SW1–SW6, ENC1, ENC2, board name on F.Silkscreen layer</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">File → Plot → Select all layers → Click Plot (generates Gerber files)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Generate Drill Files in Excellon format into same folder</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">ZIP the Gerber folder → upload to JLCPCB → order 5 boards ($5–10)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Order all components from AliExpress/LCSC while you're at it</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://jlcpcb.com" target="_blank" class="res-chip">🏭 JLCPCB Order Page</a>
+              <a href="https://www.pcbway.com" target="_blank" class="res-chip">🟦 PCBWay Alternative</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tip info"><strong>💡 Waiting for your PCB is totally normal</strong> Use the next phase to design your case and set up firmware — don't sit idle!</div>
+  </div>
+
+  <!-- phase 3 -->
+  <div class="phase">
+    <div class="ph-head d3">
+      <span class="ph-num" id="ph-num-3">DAYS 7–9</span>
+      <span class="ph-name">⏳ Case Design + Firmware Prep</span>
+      <span class="ph-badge d3">Phase 3</span>
+    </div>
+    <div class="days-grid">
+      <div class="day-card" data-card="6">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">7</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Design Case Bottom Shell</div>
+          <div class="day-desc">Use Fusion 360 (free for personal use) or Tinkercad (browser, no install).</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Create bottom plate matching PCB outline + 2mm border wall</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Add 4 standoff posts at PCB corner mounting holes (M2, 5mm tall)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Build side walls 8–10mm tall around the PCB</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Cut USB-C slot in the appropriate side wall</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://www.autodesk.com/products/fusion-360/free-trial" target="_blank" class="res-chip">🧊 Fusion 360 Free</a>
+              <a href="https://www.tinkercad.com" target="_blank" class="res-chip">🟧 Tinkercad Browser</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="7">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">8</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Design Switch Plate + Export STL</div>
+          <div class="day-desc">The plate is what you see on top. Switches snap into it. This is the visible face of your build!</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Create flat plate matching PCB outline (~1.5mm thick)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Cut 14mm × 14mm openings at each MX switch position</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Cut 7mm round holes for encoder shafts</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Export both pieces as .STL and send to printer or JLCPCB 3D print</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://builder.swillkb.com" target="_blank" class="res-chip">🗂️ swillkb Plate Builder</a>
+              <a href="https://jlcpcb.com/3d-printing" target="_blank" class="res-chip">🖨️ JLCPCB 3D Print</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="8">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">9</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Set Up QMK Environment</div>
+          <div class="day-desc">Install QMK and scaffold your firmware project while the PCB is in transit.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Install QMK MSYS (Windows) / Homebrew QMK (Mac) / apt QMK (Linux)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Run: qmk setup — initializes your build environment</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Run: qmk new-keyboard — scaffolds a new keyboard project</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Write down every GPIO pin assignment from your schematic (needed for config.h)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Browse QMK example keyboards in qmk_firmware/keyboards/ for inspiration</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://docs.qmk.fm/#/newbs" target="_blank" class="res-chip">📖 QMK Newbie Guide</a>
+              <a href="https://docs.qmk.fm/#/getting_started_build_tools" target="_blank" class="res-chip">🔧 QMK Install Guide</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- phase 4 -->
+  <div class="phase">
+    <div class="ph-head d4">
+      <span class="ph-num" id="ph-num-4">DAYS 10–12</span>
+      <span class="ph-name">🔧 Assembly & Soldering</span>
+      <span class="ph-badge d4">Phase 4</span>
+    </div>
+    <div class="days-grid">
+      <div class="day-card" data-card="9">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">10</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">PCB Arrives — Inspect & Solder SMD</div>
+          <div class="day-desc">Your boards are here! Inspect carefully, then solder the smallest parts first.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Inspect all pads under good lighting — check for shorts or bare copper</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Apply flux to diode pads and solder all 1N4148 SOD-123 diodes</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Solder SK6812 MINI-E LEDs — fast confident strokes, they're heat-sensitive!</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Solder 100nF decoupling caps near each LED (prevents flicker)</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://www.youtube.com/watch?v=37mW1i_oEpA" target="_blank" class="res-chip">▶️ SMD Soldering Tutorial</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="10">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">11</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Solder Switches, Encoders & MCU</div>
+          <div class="day-desc">The satisfying step — your board really starts to look like a macropad!</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Snap all 6 switches into the plate, set plate+switches onto PCB</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Tack corner switches first to lock alignment, then solder all 12 pins</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Solder both EC11 encoders — 5 signal pins + 2 mounting legs each</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Solder Raspberry Pi Pico via pin headers or direct mount</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Solder the reset tactile button</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Visual inspection: look for cold joints and solder bridges under good light</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="11">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">12</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">First Power-On Test</div>
+          <div class="day-desc">Check for shorts with a multimeter first — then plug it in and watch those LEDs glow!</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Multimeter in continuity mode: confirm no short between VCC and GND pins</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Plug into USB — MCU should enumerate as USB device (check Device Manager)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Flash basic test firmware → verify all 6 LEDs light up in sequence</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Reflow any cold joints: add flux, briefly reheat with iron tip</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://keyboardtester.com" target="_blank" class="res-chip">🧪 Keyboard Tester</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tip err"><strong>⚠️ Soldering Order Matters!</strong> Always go smallest to tallest: SMD diodes → SK6812 LEDs → switches → encoders → MCU. Getting this wrong makes later components very hard to reach.</div>
+  </div>
+
+  <!-- phase 5 -->
+  <div class="phase">
+    <div class="ph-head d5">
+      <span class="ph-num" id="ph-num-5">DAYS 13–15</span>
+      <span class="ph-name">💻 Firmware & Final Assembly</span>
+      <span class="ph-badge d5">Phase 5</span>
+    </div>
+    <div class="days-grid">
+      <div class="day-card" data-card="12">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">13</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Write Your QMK Firmware</div>
+          <div class="day-desc">Configure your keyboard brain — pins, keys, RGB effects, and encoder actions.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Create keyboard dir: qmk_firmware/keyboards/mymacropad/</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Edit config.h: MATRIX_ROW/COL_PINS, WS2812_DI_PIN, ENCODERS_PAD_A/B</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Edit keymap.c: assign 6 keycodes (git commit, save, build, run, format, push)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Add encoder_update_user() callback: knob 1 = scroll, knob 2 = volume</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Enable in rules.mk: RGB_MATRIX_ENABLE = yes, ENCODER_ENABLE = yes</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Build: qmk compile -kb mymacropad -km default — fix any errors</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://docs.qmk.fm/#/config_options" target="_blank" class="res-chip">📖 config.h Reference</a>
+              <a href="https://docs.qmk.fm/#/feature_rgb_matrix" target="_blank" class="res-chip">🌈 RGB Matrix Docs</a>
+              <a href="https://docs.qmk.fm/#/feature_encoders" target="_blank" class="res-chip">🎛️ Encoder Docs</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="13">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">14</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Flash, Test & Remap</div>
+          <div class="day-desc">Flash firmware, test every single input, then dial in your perfect key layout.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Flash: qmk flash -kb mymacropad -km default (hold BOOT while connecting)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Open keyboardtester.com and press every key one-by-one</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Test both encoder directions (CW and CCW) and their push buttons</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Test RGB: cycle all effects with RGB_MOD key, check every LED</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Open VIA or Vial and remap keys to your perfect programmer shortcuts</span></li>
+          </ul>
+          <div class="day-res">
+            <div class="day-res-lbl">Resources</div>
+            <div class="res-chips">
+              <a href="https://usevia.app" target="_blank" class="res-chip">🎛️ VIA Web App</a>
+              <a href="https://get.vial.today" target="_blank" class="res-chip">⚡ Vial App</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" data-card="14">
+        <div class="day-num"><span class="lbl">Day</span><span class="num">15</span><span class="shared-badge">SAME DAY ▲</span></div>
+        <div>
+          <div class="day-title">Assemble Case & Celebrate! 🎉</div>
+          <div class="day-desc">Final put-together. Your macropad is about to become a real desk companion.</div>
+          <ul class="day-tasks">
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Thread M2 screws through bottom case into PCB standoff posts</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Seat the PCB + switch plate assembly into the bottom case</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Press encoder knobs onto EC11 shafts (set screw or friction fit)</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Press all 6 keycaps firmly onto switch stems</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">Final plug-in test — all keys, knobs, RGB perfect? ✅</span></li>
+            <li onclick="toggleTask(this)"><div class="t-cb"></div><span class="t-txt">📸 Take photos and share on r/MechanicalKeyboards!</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="tip ok"><strong>🎉 You Did It!</strong> You've designed a PCB, soldered components, written firmware, and built a real working keyboard. That's proper embedded hardware engineering. Be proud!</div>
+  </div>
+
+  <!-- pcb deep dive -->
+  <div class="sec-label">🔌 Deep Dive</div>
+  <h2 class="st" style="margin-top:0">PCB Design Explained</h2>
+  <div class="pcb-steps">
+    <div class="pcb-step"><div class="step-circle">1</div><div><div class="step-title">Switch Matrix — Why diodes?</div><div class="step-body">For 6 keys, use a <code>2×3 matrix</code> — 2 rows × 3 columns = 5 MCU pins instead of 6. Diodes prevent "ghosting" (phantom keypresses) when multiple keys are held. Rule: <code>Row → switch → diode → Column</code>. Diode cathode (stripe side) always points toward the column wire.</div></div></div>
+    <div class="pcb-step"><div class="step-circle">2</div><div><div class="step-title">RGB LED Wiring (Addressable LEDs)</div><div class="step-body">SK6812 and WS2812B LEDs need only <strong>one data wire</strong> from your MCU! They daisy-chain: <code>MCU GPIO → LED1 DIN → LED1 DOUT → LED2 DIN →...</code>. Add a <code>300Ω resistor</code> on the MCU data line and a <code>100nF bypass cap</code> between VCC and GND near each LED to prevent flickering.</div></div></div>
+    <div class="pcb-step"><div class="step-circle">3</div><div><div class="step-title">EC11 Encoder Pinout</div><div class="step-body">EC11 has 5 pins: <code>A, B, C (GND), SW1, SW2</code>. Connect A and B to MCU GPIOs (pull-ups enabled in firmware). Connect C to GND. SW1+SW2 are the push-click switch — wire like a regular key switch. Enable <code>ENCODER_ENABLE = yes</code> in QMK rules.mk.</div></div></div>
+    <div class="pcb-step"><div class="step-circle">4</div><div><div class="step-title">RP2040 Pin Recommendation</div><div class="step-body">Suggested: <code>GP0–GP1</code> = matrix rows, <code>GP2–GP4</code> = matrix columns, <code>GP5</code> = RGB data, <code>GP6–GP7</code> = encoder 1 (A, B), <code>GP8–GP9</code> = encoder 2 (A, B), <code>GP10–GP11</code> = encoder push buttons. Write this down — it goes directly into config.h!</div></div></div>
+  </div>
+
+  <!-- firmware snippets -->
+  <div class="sec-label" style="margin-top:60px">💻 Code Reference</div>
+  <h2 class="st" style="margin-top:0">QMK Firmware Snippets</h2>
+
+  <div class="code-lbl">config.h — Pin & Feature Configuration</div>
+  <div class="code-block">
+<span class="cm">// config.h</span>
+<span class="kw">#pragma once</span>
+<span class="kw">#include</span> <span class="str">"config_common.h"</span>
+
+<span class="cm">// Matrix: 2 rows × 3 cols = 6 keys on 5 pins</span>
+<span class="kw">#define</span> MATRIX_ROWS       <span class="num">2</span>
+<span class="kw">#define</span> MATRIX_COLS       <span class="num">3</span>
+<span class="kw">#define</span> MATRIX_ROW_PINS   { GP0, GP1 }
+<span class="kw">#define</span> MATRIX_COL_PINS   { GP2, GP3, GP4 }
+<span class="kw">#define</span> DIODE_DIRECTION   COL2ROW
+
+<span class="cm">// RGB LEDs</span>
+<span class="kw">#define</span> WS2812_DI_PIN          GP5
+<span class="kw">#define</span> RGB_MATRIX_LED_COUNT   <span class="num">6</span>
+<span class="kw">#define</span> RGB_MATRIX_MAXIMUM_BRIGHTNESS <span class="num">200</span>
+
+<span class="cm">// Rotary Encoders</span>
+<span class="kw">#define</span> ENCODERS_PAD_A   { GP6, GP8 }
+<span class="kw">#define</span> ENCODERS_PAD_B   { GP7, GP9 }
+<span class="kw">#define</span> ENCODER_RESOLUTION <span class="num">4</span>
+  </div>
+
+  <div class="code-lbl">keymap.c — Keys + Encoder Callbacks</div>
+  <div class="code-block">
+<span class="cm">// keymap.c</span>
+<span class="kw">#include</span> QMK_KEYBOARD_H
+
+<span class="kw">const uint16_t</span> PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+  [<span class="num">0</span>] = LAYOUT(
+    <span class="cm">// Row 1: Format, Save, Toggle Sidebar</span>
+    LSFT(LALT(KC_F)),   LCTL(KC_S),    LCTL(KC_B),
+    <span class="cm">// Row 2: Build, Run, Custom macro (git push etc)</span>
+    LCTL(LSFT(KC_B)),   KC_F5,         KC_F13
+  )
+};
+
+<span class="cm">// Encoder: Knob 1 = scroll, Knob 2 = volume</span>
+<span class="kw">bool</span> <span class="fn">encoder_update_user</span>(<span class="kw">uint8_t</span> index, <span class="kw">bool</span> clockwise) {
+  <span class="kw">if</span> (index == <span class="num">0</span>) {
+    clockwise ? <span class="fn">tap_code</span>(KC_MS_WH_DOWN) : <span class="fn">tap_code</span>(KC_MS_WH_UP);
+  } <span class="kw">else</span> {
+    clockwise ? <span class="fn">tap_code</span>(KC_VOLU) : <span class="fn">tap_code</span>(KC_VOLD);
+  }
+  <span class="kw">return false</span>;
+}
+  </div>
+
+  <div class="tip info">
+    <strong>🎨 Enable VIA for Live Remapping</strong>
+    Add <code>VIA_ENABLE = yes</code> to rules.mk. Then visit
+    <a href="https://usevia.app" target="_blank">usevia.app</a> — remap keys in your browser with zero reflashing needed!
+  </div>
+
+  <!-- case options -->
+  <div class="sec-label">📦 Case Options</div>
+  <h2 class="st" style="margin-top:0">Choose Your Case Style</h2>
+  <div class="case-grid">
+    <div class="case-card"><div class="case-icon">🖨️</div><div class="case-title">3D Printed Sandwich</div><div class="case-desc">Two-piece: bottom shell + switch plate. 2–4 hours to print in PLA or PETG. Most accessible option if you have a printer or a nearby makerspace.</div><span class="case-rec best">✅ Best for this Build</span></div>
+    <div class="case-card"><div class="case-icon">🏭</div><div class="case-title">JLCPCB 3D Print</div><div class="case-desc">Upload your STL with your PCB order. They print and ship together. Resin gives incredible detail. No printer needed at all.</div><span class="case-rec good">👍 No Printer Needed</span></div>
+    <div class="case-card"><div class="case-icon">✨</div><div class="case-title">Acrylic Stack</div><div class="case-desc">Layered frosted acrylic panels with M2 standoffs. RGB glows through the sides beautifully. Export DXF from your KiCad board outline for laser cutting.</div><span class="case-rec good">✨ Stunning with RGB</span></div>
+  </div>
+
+  <!-- final checklist -->
+  <div class="sec-label" style="margin-top:60px">✅ Final Checklist</div>
+  <h2 class="st" style="margin-top:0">You're Done When All Green!</h2>
+  <div class="check-grid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">All 6 keys register correctly</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Both encoders rotate and click</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">All 6 RGB LEDs light up</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">USB-C connects reliably</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">No PCB shorts (multimeter test)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Firmware flashes without errors</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Keycaps pressed on firmly</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Case assembled with all screws</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Macros tested in real apps</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="ci-txt">Photos taken for Reddit! 📸</span></div>
+  </div>
+
+</div>
+
+<div class="guide-footer">
+  <h2>Happy Building! 🚀</h2>
+  <p>You designed a PCB, soldered hardware, and wrote firmware from scratch.</p>
+  <p>That's real engineering. That's genuinely impressive. Now go use it every day!</p>
+  <div class="footer-links">
+    <a href="https://www.reddit.com/r/MechanicalKeyboards/" target="_blank" class="res-chip"><span>💬</span>Share on r/MechanicalKeyboards</a>
+    <a href="https://discord.gg/qmk" target="_blank" class="res-chip"><span>🎮</span>QMK Discord for Help</a>
+    <a href="https://keyboardtester.com" target="_blank" class="res-chip"><span>🧪</span>Keyboard Tester</a>
+  </div>
+</div>
+
+<script>
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.t === t);
+  });
+  try { localStorage.setItem('mpTheme', t); } catch(e) {}
+}
+
+// scroll progress
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = d.scrollHeight - d.clientHeight > 0
+    ? (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100
+    : 0;
+  document.getElementById('readFill').style.width = pct + '%';
+});
+
+// assign IDs to tasks so we can persist them
+let taskId = 0;
+document.querySelectorAll('.day-tasks li').forEach(li => {
+  li.dataset.id = 't' + (taskId++);
+});
+
+function toggleTask(li) {
+  li.classList.toggle('done');
+  li.querySelector('.t-cb').textContent = li.classList.contains('done') ? '✓' : '';
+  saveState();
+  updateProgress();
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  el.querySelector('.check-box').textContent = el.classList.contains('done') ? '✓' : '';
+  saveState();
+  updateProgress();
+}
+
+function updateProgress() {
+  const allT  = document.querySelectorAll('.day-tasks li');
+  const doneT = document.querySelectorAll('.day-tasks li.done');
+  const allF  = document.querySelectorAll('.check-item');
+  const doneF = document.querySelectorAll('.check-item.done');
+  const total = allT.length + allF.length;
+  const done  = doneT.length + doneF.length;
+  const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('hpDone').textContent  = done;
+  document.getElementById('hpTotal').textContent = total;
+  document.getElementById('hpBar').style.width   = pct + '%';
+  document.getElementById('hpPct').textContent   = pct + '%';
+}
+
+function saveState() {
+  try {
+    const tasks = {};
+    document.querySelectorAll('.day-tasks li').forEach(li => {
+      tasks[li.dataset.id] = li.classList.contains('done');
+    });
+    const finals = {};
+    document.querySelectorAll('.check-item').forEach((el, i) => {
+      finals[i] = el.classList.contains('done');
+    });
+    localStorage.setItem('mpTasks',  JSON.stringify(tasks));
+    localStorage.setItem('mpFinals', JSON.stringify(finals));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const tasks  = JSON.parse(localStorage.getItem('mpTasks')  || '{}');
+    const finals = JSON.parse(localStorage.getItem('mpFinals') || '{}');
+    document.querySelectorAll('.day-tasks li').forEach(li => {
+      if (tasks[li.dataset.id]) {
+        li.classList.add('done');
+        li.querySelector('.t-cb').textContent = '✓';
+      }
+    });
+    document.querySelectorAll('.check-item').forEach((el, i) => {
+      if (finals[i]) {
+        el.classList.add('done');
+        el.querySelector('.check-box').textContent = '✓';
+      }
+    });
+  } catch(e) {}
+}
+
+// timeline logic — maps 15 task cards onto N calendar days
+const TOTAL_CARDS = 15;
+
+function calcDayAssignments(N) {
+  const out = [];
+  for (let i = 0; i < TOTAL_CARDS; i++) {
+    out.push(Math.max(1, Math.min(Math.ceil(((i + 1) / TOTAL_CARDS) * N), N)));
+  }
+  // ensure monotonically increasing
+  for (let i = 1; i < out.length; i++) {
+    if (out[i] < out[i - 1]) out[i] = out[i - 1];
+  }
+  return out;
+}
+
+function setTimeline(N, fromSlider) {
+  N = Math.max(3, Math.min(30, N));
+
+  document.getElementById('tlSlider').value      = N;
+  document.getElementById('tlDayBig').textContent = N;
+
+  document.querySelectorAll('.mode-chip').forEach(btn => {
+    btn.classList.toggle('active',
+      parseInt(btn.textContent) === N || btn.textContent.startsWith(N + ' '));
+  });
+
+  const days = calcDayAssignments(N);
+
+  document.querySelectorAll('.day-card').forEach((card, i) => {
+    card.querySelector('.day-num .num').textContent = days[i];
+    card.classList.toggle('day-shared', i > 0 && days[i] === days[i - 1]);
+  });
+
+  const phaseRanges = [[0,2],[3,5],[6,8],[9,11],[12,14]];
+  phaseRanges.forEach(([s, e], idx) => {
+    const start = days[s], end = days[e];
+    const label = start === end ? `DAY ${start}` : `DAYS ${start}–${end}`;
+    const sum   = start === end ? `Day ${start}` : `Days ${start}–${end}`;
+    document.getElementById(`ph-num-${idx + 1}`).textContent = label;
+    document.getElementById(`sum-p${idx + 1}`).textContent   = sum;
+  });
+
+  document.getElementById('ov-timeline-val').textContent  = N + ' Days';
+  document.getElementById('timelineHeading').textContent  = `Your ${N}-Day Build Timeline`;
+  document.getElementById('pcbTip').innerHTML =
+    `<strong>⚠️ Order PCB on Day ${days[5]}!</strong> JLCPCB fabrication + shipping = 7–10 days. Everything else happens while you wait.`;
+
+  updateStatusMessage(N);
+
+  // fill the slider track visually
+  const pct = ((N - 3) / 27) * 100;
+  document.getElementById('tlSlider').style.background =
+    `linear-gradient(90deg, var(--accent) ${pct}%, var(--border) ${pct}%)`;
+
+  try { localStorage.setItem('mpDays', N); } catch(e) {}
+}
+
+function updateStatusMessage(N) {
+  const el   = document.getElementById('tlStatus');
+  const text = document.getElementById('tlStatusText');
+  const icon = el.querySelector('.tl-status-icon');
+  el.classList.remove('normal', 'compressed', 'relaxed');
+
+  if (N <= 7) {
+    el.classList.add('compressed');
+    icon.textContent = '⚡';
+    text.textContent = N <= 4
+      ? 'Extreme sprint — multiple sessions per day needed. Budget 4–6 hours daily.'
+      : 'Compressed schedule — expect 2–3 focused sessions per day. Plan ahead!';
+  } else if (N >= 20) {
+    el.classList.add('relaxed');
+    icon.textContent = '😌';
+    text.textContent = N >= 27
+      ? 'Very relaxed pace — short daily sessions, plenty of breathing room. Perfect for learning.'
+      : 'Comfortable pace — 1 session every 1–2 days. Great for learning as you go.';
+  } else {
+    el.classList.add('normal');
+    icon.textContent = '✅';
+    text.textContent = N === 15
+      ? 'Standard 15-day guide — one comfortable session per day.'
+      : `Adjusted ${N}-day timeline — one focused session per day, achievable!`;
+  }
+}
+
+function applyPreset(n) {
+  setTimeline(n, false);
+  document.querySelectorAll('.mode-chip').forEach(btn => {
+    btn.classList.toggle('active',
+      parseInt(btn.getAttribute('onclick').match(/\d+/)[0]) === n);
+  });
+}
+
+// init
+(function init() {
+  try {
+    const t = localStorage.getItem('mpTheme');
+    if (t) setTheme(t);
+  } catch(e) {}
+
+  loadState();
+  updateProgress();
+
+  let days = 15;
+  try {
+    const d = parseInt(localStorage.getItem('mpDays'));
+    if (!isNaN(d)) days = d;
+  } catch(e) {}
+  setTimeline(days, false);
+})();
+</script>
+</body>
+</html>  
